@@ -3,9 +3,19 @@
 
 #include "board.h"
 
+typedef enum _mtype {
+    PASS, PLACE_STONE
+} mtype;
+
+typedef struct _mov {
+    mtype type;
+    coord coordinate;
+} mov;
+
 extern char player;
 void switch_player();
-coord get_coord();
-void play(coord coordinate);
+mov get_move();
+void play(mov move);
+void calculate_score();
 
 #endif

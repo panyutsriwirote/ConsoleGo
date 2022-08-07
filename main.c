@@ -1,11 +1,10 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "play.h"
 
 int main() {
     show_board();
     while (true) {
-        play(get_coord());
+        play(get_move());
     }
     return EXIT_SUCCESS;
 }

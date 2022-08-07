@@ -10,9 +10,10 @@ void switch_player() {
     player = (player == 'X') ? 'O' : 'X';
 }
 
-coord get_coord() {
+mov get_move() {
     static char buffer[4] = {'\0', '\0', '\0', '\0'};
     static char *status;
+    mov move;
     input:
         printf("%c's move: ", player);
         status = fgets(buffer, 4, stdin);
@@ -20,9 +21,18 @@ coord get_coord() {
             fputs("An error occured, exiting...", stderr);
             exit(EXIT_FAILURE);
         }
-        if (buffer[0] == '\n' || buffer[1] == '\n') {
+        if (buffer[0] == '\n') {
             puts("Please enter a valid move: [A-I][1-9]");
             goto input;
+        }
+        if (buffer[1] == '\n') {
+            if (toupper(buffer[0]) == 'P') {
+                move.type = PASS;
+                return move;
+            } else {
+                puts("Please enter a valid move: [A-I][1-9]");
+                goto input;
+            }
         }
         if (buffer[2] != '\n') {
             puts("Please enter a valid move: [A-I][1-9]");
@@ -37,10 +47,32 @@ coord get_coord() {
             puts("Please enter a valid move: [A-I][1-9]");
             goto input;
         }
-    return to_coord(buffer);
+    move.type = PLACE_STONE;
+    move.coordinate = to_coord(buffer);
+    return move;
 }
 
-void play(coord coordinate) {
+void play(mov move) {
+    static bool X_pass = false;
+    static bool O_pass = false;
+    if (move.type == PASS) {
+        if (player == 'X') {
+            X_pass = true;
+        } else {
+            O_pass = true;
+        }
+        if (X_pass && O_pass) {
+            calculate_score();
+        }
+        switch_player();
+        return;
+    }
+    if (player == 'X') {
+        X_pass = false;
+    } else {
+        O_pass = false;
+    }
+    coord coordinate = move.coordinate;
     explore_environment(coordinate)
     if (color != ' ') {
         puts("Slot already taken, please make another move");
@@ -79,4 +111,9 @@ void play(coord coordinate) {
     /*******************************************************/
     show_board();
     switch_player();
+}
+
+void calculate_score() {
+    fputs("Game ended!", stdout);
+    exit(EXIT_SUCCESS);
 }

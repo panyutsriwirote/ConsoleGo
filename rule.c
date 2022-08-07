@@ -1,8 +1,16 @@
 #include "rule.h"
 
+int X_prisoner = 0;
+int O_prisoner = 0;
+
 void remove_group(coord coordinate) {
     explore_environment(coordinate)
     board[coordinate] = ' ';
+    if (color == 'X') {
+        O_prisoner++;
+    } else {
+        X_prisoner++;
+    }
     if (board[up_slot] == color) {
         remove_group(up_slot);
     }
@@ -68,8 +76,4 @@ bool is_captured(coord coordinate) {
     bool status = group_is_surrounded(coordinate);
     unmark_board();
     return status;
-}
-
-bool is_legal(coord coordinate) {
-    return true;
 }

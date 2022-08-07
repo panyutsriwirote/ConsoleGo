@@ -1,4 +1,4 @@
-#include "board.h"
+#include "rule.h"
 #include <stdio.h>
 #include <windows.h>
 
@@ -8,23 +8,39 @@ typedef enum _concol {
     default_color = 7
 } concol;
 
+static HANDLE console;
+
+static inline void print_X() {
+    SetConsoleTextAttribute(console, red);
+    putchar('X');
+    SetConsoleTextAttribute(console, default_color);
+}
+
+static inline void print_O() {
+    SetConsoleTextAttribute(console, blue);
+    putchar('O');
+    SetConsoleTextAttribute(console, default_color);
+}
+
 void show_board() {
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    console = GetStdHandle(STD_OUTPUT_HANDLE);
     for (int i = 0; i < sizeof(board); i++) {
         switch (board[i]) {
             case 'X':
-                SetConsoleTextAttribute(console, red);
-                putchar(board[i]);
-                SetConsoleTextAttribute(console, default_color);
+                print_X();
                 break;
             case 'O':
-                SetConsoleTextAttribute(console, blue);
-                putchar(board[i]);
-                SetConsoleTextAttribute(console, default_color);
+                print_O();
                 break;
             default:
                 putchar(board[i]);
         }
     }
     putchar('\n');
+    fputs("             ", stdout);
+    print_X();
+    printf("'s prisoner: %d\n", X_prisoner);
+    fputs("             ", stdout);
+    print_O();
+    printf("'s prisoner: %d\n", O_prisoner);
 }

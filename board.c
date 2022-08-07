@@ -1,5 +1,4 @@
 #include "board.h"
-#include <ctype.h>
 
 /*********************************************/
 /*                A 9x9 Board                */
@@ -30,14 +29,6 @@ char board[798] =
 ";
 
 const int edge = sizeof(board) - 1;
-
-/*********************************************/
-/*         String conversion function        */
-/*********************************************/
-
-coord to_coord(char *string) {
-    return 80 * (':' - toupper(string[1])) + 2 + 4 * (toupper(string[0]) - 'A');
-}
 
 /*********************************************/
 /*          Edge checking functions          */
@@ -109,24 +100,4 @@ bool is_rightmost(coord coordinate) {
         default:
             return false;
     }
-}
-
-/*********************************************/
-/*        Board transversal functions        */
-/*********************************************/
-
-coord up(coord coordinate) {
-    return coordinate - 80;
-}
-
-coord down(coord coordinate) {
-    return coordinate + 80;
-}
-
-coord left(coord coordinate) {
-    return coordinate - 4;
-}
-
-coord right(coord coordinate) {
-    return coordinate + 4;
 }

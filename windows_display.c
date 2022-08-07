@@ -2,21 +2,18 @@
 #include <stdio.h>
 #include <windows.h>
 
-typedef enum _concol {
-    red = 4,
-    blue = 9,
-    default_color = 7
-} concol;
+#define red 4
+#define blue 9
+#define default_color 7
 
 static HANDLE console;
 
-static inline void print_X() {
+static void print_X() {
     SetConsoleTextAttribute(console, red);
     putchar('X');
     SetConsoleTextAttribute(console, default_color);
 }
-
-static inline void print_O() {
+static void print_O() {
     SetConsoleTextAttribute(console, blue);
     putchar('O');
     SetConsoleTextAttribute(console, default_color);

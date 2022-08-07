@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <stdbool.h>
+#include <ctype.h>
 
 // A 9x9 board
 extern char board[798];
@@ -9,7 +10,7 @@ void show_board(); // Define in display.c
 extern const int edge; // Index of the null terminator
 
 // Coordinate of board's slot
-typedef enum _coord {
+typedef enum {
     A9 =  82, B9 =  86, C9 =  90, D9 =  94, E9 =  98, F9 = 102, G9 = 106, H9 = 110, I9 = 114,
     A8 = 162, B8 = 166, C8 = 170, D8 = 174, E8 = 178, F8 = 182, G8 = 186, H8 = 190, I8 = 194,
     A7 = 242, B7 = 246, C7 = 250, D7 = 254, E7 = 258, F7 = 262, G7 = 266, H7 = 270, I7 = 274,
@@ -22,7 +23,9 @@ typedef enum _coord {
 } coord;
 
 // String conversion function
-coord to_coord(char *string);
+static inline coord to_coord(char *string) {
+    return 80 * (':' - toupper(string[1])) + 2 + 4 * (toupper(string[0]) - 'A');
+}
 
 // Edge checking functions
 bool is_top(coord coordinate);
@@ -31,9 +34,9 @@ bool is_leftmost(coord coordinate);
 bool is_rightmost(coord coordinate);
 
 // Board transversal functions
-coord up(coord coordinate);
-coord down(coord coordinate);
-coord left(coord coordinate);
-coord right(coord coordinate);
+static inline coord up(coord coordinate) {return coordinate - 80;}
+static inline coord down(coord coordinate) {return coordinate + 80;}
+static inline coord left(coord coordinate) {return coordinate - 4;}
+static inline coord right(coord coordinate) {return coordinate + 4;}
 
 #endif

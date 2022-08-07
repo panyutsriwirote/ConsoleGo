@@ -3,8 +3,9 @@
 
 #include "board.h"
 
+#define KOMI 6.5
+
 #define explore_environment(coordinate)\
-    char color = board[coordinate];\
     coord up_slot = is_top(coordinate) ? edge : up(coordinate);\
     coord down_slot = is_bottom(coordinate) ? edge : down(coordinate);\
     coord left_slot = is_leftmost(coordinate) ? edge : left(coordinate);\

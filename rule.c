@@ -4,6 +4,7 @@ int X_prisoner = 0;
 int O_prisoner = 0;
 
 void remove_group(coord coordinate) {
+    char color = board[coordinate];
     explore_environment(coordinate)
     board[coordinate] = ' ';
     if (color == 'X') {
@@ -25,7 +26,7 @@ void remove_group(coord coordinate) {
     }
 }
 
-bool group_is_surrounded(coord coordinate) {
+static bool group_is_surrounded(coord coordinate) {
     explore_environment(coordinate)
     if (
         board[up_slot] == ' ' ||
@@ -35,7 +36,8 @@ bool group_is_surrounded(coord coordinate) {
     ) {
         return false;
     }
-    board[coordinate] = (color == 'X') ? 'Y' : 'P';
+    char color = board[coordinate];
+    board[coordinate] = (color == 'X') ? 'B' : 'W';
     if (board[up_slot] == color) {
         if (!group_is_surrounded(up_slot)) {
             return false;
@@ -59,15 +61,21 @@ bool group_is_surrounded(coord coordinate) {
     return true;
 }
 
-void unmark_board() {
-    for (int i = 0; i < sizeof(board); i++) {
-        switch (board[i]) {
-            case 'Y':
-                board[i] = 'X';
-                break;
-            case 'P':
-                board[i] = 'O';
-                break;
+static void unmark_board() {
+    for (coord i = A9; i <= A1; i = down(i)) {
+        for (
+            coord coordinate = i, right_edge = i + 32;
+            coordinate <= right_edge;
+            coordinate += 4
+        ) {
+            switch (board[coordinate]) {
+                case 'B':
+                    board[i] = 'X';
+                    break;
+                case 'W':
+                    board[i] = 'O';
+                    break;
+            }
         }
     }
 }

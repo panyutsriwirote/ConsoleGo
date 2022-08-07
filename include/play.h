@@ -3,12 +3,8 @@
 
 #include "board.h"
 
-typedef enum _mtype {
-    PASS, PLACE_STONE
-} mtype;
-
-typedef struct _mov {
-    mtype type;
+typedef struct {
+    enum {PASS, PLACE_STONE} type;
     coord coordinate;
 } mov;
 

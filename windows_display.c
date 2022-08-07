@@ -8,12 +8,12 @@
 
 static HANDLE console;
 
-static void print_X() {
+static inline void print_X() {
     SetConsoleTextAttribute(console, red);
     putchar('X');
     SetConsoleTextAttribute(console, default_color);
 }
-static void print_O() {
+static inline void print_O() {
     SetConsoleTextAttribute(console, blue);
     putchar('O');
     SetConsoleTextAttribute(console, default_color);

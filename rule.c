@@ -5,13 +5,13 @@ int O_prisoner = 0;
 
 void remove_group(coord coordinate) {
     char color = board[coordinate];
-    explore_environment(coordinate)
     board[coordinate] = ' ';
     if (color == 'X') {
         O_prisoner++;
     } else {
         X_prisoner++;
     }
+    explore_environment(coordinate)
     if (board[up_slot] == color) {
         remove_group(up_slot);
     }
@@ -66,14 +66,14 @@ static void unmark_board() {
         for (
             coord coordinate = i, right_edge = i + 32;
             coordinate <= right_edge;
-            coordinate += 4
+            coordinate = right(coordinate)
         ) {
             switch (board[coordinate]) {
                 case 'B':
-                    board[i] = 'X';
+                    board[coordinate] = 'X';
                     break;
                 case 'W':
-                    board[i] = 'O';
+                    board[coordinate] = 'O';
                     break;
             }
         }

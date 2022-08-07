@@ -24,7 +24,7 @@ typedef enum {
 
 // String conversion function
 static inline coord to_coord(char *string) {
-    return 80 * (':' - toupper(string[1])) + 2 + 4 * (toupper(string[0]) - 'A');
+    return 80 * (':' - string[1]) + 2 + 4 * (toupper(string[0]) - 'A');
 }
 
 // Edge checking functions

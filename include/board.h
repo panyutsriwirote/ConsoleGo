@@ -5,6 +5,7 @@
 
 // A 9x9 board
 extern char board[798];
+void show_board(); // Define in display.c
 
 // Coordinate of board's slot
 typedef enum _coord {

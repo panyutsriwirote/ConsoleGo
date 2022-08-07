@@ -3,7 +3,7 @@
 #include "play.h"
 
 int main() {
-    puts(board);
+    show_board();
     while (true) {
         play(get_coord());
     }

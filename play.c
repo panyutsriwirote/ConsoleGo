@@ -1,4 +1,5 @@
 #include "play.h"
+#include "rule.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -6,11 +7,7 @@
 char player = 'X';
 
 void switch_player() {
-    if (player == 'X') {
-        player = 'O';
-    } else {
-        player = 'X';
-    }
+    player = (player == 'X') ? 'O' : 'X';
 }
 
 coord get_coord() {
@@ -44,16 +41,41 @@ coord get_coord() {
 }
 
 void play(coord coordinate) {
-    if (board[coordinate] != ' ') {
+    explore_environment(coordinate)
+    if (color != ' ') {
         puts("Slot already taken, please make another move");
         return;
     }
     /*******************************************************/
-    /*********************GO LOGIC HERE*********************/
+    /*                       Go Logic                      */
     /*******************************************************/
     board[coordinate] = player;
+    char enemy = (player == 'X') ? 'O' : 'X';
+    if (board[up_slot] == enemy) {
+        if (is_captured(up_slot)) {
+            remove_group(up_slot);
+        }
+    }
+    if (board[down_slot] == enemy) {
+        if (is_captured(down_slot)) {
+            remove_group(down_slot);
+        }
+    }
+    if (board[left_slot] == enemy) {
+        if (is_captured(left_slot)) {
+            remove_group(left_slot);
+        }
+    }
+    if (board[right_slot] == enemy) {
+        if (is_captured(right_slot)) {
+            remove_group(right_slot);
+        }
+    }
+    if (is_captured(coordinate)) {
+        remove_group(coordinate);
+    }
     /*******************************************************/
-    /*********************GO LOGIC HERE*********************/
+    /*                       Go Logic                      */
     /*******************************************************/
     puts(board);
     switch_player();

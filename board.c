@@ -30,7 +30,7 @@ char board[798] =
 ";
 
 /*********************************************/
-/*          String-to-coord function         */
+/*         String conversion function        */
 /*********************************************/
 
 coord to_coord(char *string) {

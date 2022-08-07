@@ -19,7 +19,7 @@ typedef enum _coord {
     A1 = 722, B1 = 726, C1 = 730, D1 = 734, E1 = 738, F1 = 742, G1 = 746, H1 = 750, I1 = 754
 } coord;
 
-// String-to-coord function
+// String conversion function
 coord to_coord(char *string);
 
 // Edge checking functions

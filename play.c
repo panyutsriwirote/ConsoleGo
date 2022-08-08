@@ -21,7 +21,7 @@ mov get_move() {
             exit(EXIT_FAILURE);
         }
         if (buffer[0] == '\n') {
-            puts("Please enter a valid move: [A-I][1-9]");
+            puts("Please enter a valid move: [A-I][1-9] or P to pass");
             goto input;
         }
         if (buffer[1] == '\n') {
@@ -29,12 +29,12 @@ mov get_move() {
                 move.type = PASS;
                 return move;
             } else {
-                puts("Please enter a valid move: [A-I][1-9]");
+                puts("Please enter a valid move: [A-I][1-9] or P to pass");
                 goto input;
             }
         }
         if (buffer[2] != '\n') {
-            puts("Please enter a valid move: [A-I][1-9]");
+            puts("Please enter a valid move: [A-I][1-9] or P to pass");
             while (getchar() != '\n') {
                 continue;
             }
@@ -43,7 +43,7 @@ mov get_move() {
         char letter = toupper(buffer[0]);
         char num = buffer[1];
         if (letter < 'A' || letter > 'I' || num < '1' || num > '9') {
-            puts("Please enter a valid move: [A-I][1-9]");
+            puts("Please enter a valid move: [A-I][1-9] or P to pass");
             goto input;
         }
     move.type = PLACE_STONE;
@@ -150,8 +150,7 @@ static char territory_owner(coord coordinate) {
     } else {
         owner = ' ';
     }
-    surrounded_by_X = false;
-    surrounded_by_O = false;
+    surrounded_by_X = surrounded_by_O = false;
     return owner;
 }
 
@@ -161,7 +160,7 @@ static void paint_territory(coord coordinate) {
         for (
             coord coordinate = i, right_edge = i + 32;
             coordinate <= right_edge;
-            coordinate += 4
+            coordinate = right(coordinate)
         ) {
             if (board[coordinate] == 'V') {
                 board[coordinate] = paint;
@@ -191,13 +190,73 @@ static void count_territory() {
     }
 }
 
+static mov get_dead_stone() {
+    static char buffer[4] = {'\0', '\0', '\0', '\0'};
+    static char *status;
+    mov move;
+    input:
+        fputs("Select dead group: ", stdout);
+        status = fgets(buffer, 4, stdin);
+        if (status == NULL) {
+            fputs("An error occured, exiting...", stderr);
+            exit(EXIT_FAILURE);
+        }
+        if (buffer[0] == '\n') {
+            puts("Please enter a valid location: [A-I][1-9] or P to finish");
+            goto input;
+        }
+        if (buffer[1] == '\n') {
+            if (toupper(buffer[0]) == 'P') {
+                move.type = PASS;
+                return move;
+            } else {
+                puts("Please enter a valid location: [A-I][1-9] or P to finish");
+                goto input;
+            }
+        }
+        if (buffer[2] != '\n') {
+            puts("Please enter a valid location: [A-I][1-9] or P to finish");
+            while (getchar() != '\n') {
+                continue;
+            }
+            goto input;
+        }
+        char letter = toupper(buffer[0]);
+        char num = buffer[1];
+        if (letter < 'A' || letter > 'I' || num < '1' || num > '9') {
+            puts("Please enter a valid location: [A-I][1-9] or P to finish");
+            goto input;
+        }
+    move.type = PLACE_STONE;
+    move.coordinate = to_coord(buffer);
+    return move;
+}
+
+static void remove_dead_group() {
+    start:
+    mov input = get_dead_stone();
+    if (input.type == PASS) {
+        return;
+    }
+    coord coordinate = input.coordinate;
+    if (board[coordinate] == ' ') {
+        puts("There is no stone at the specified location");
+        goto start;
+    }
+    remove_group(coordinate);
+    show_board();
+    goto start;
+}
+
 void calculate_score() {
-    puts("Game ended!");
+    puts("Game Over!");
+    puts("Select dead groups to remove, enter P when finished");
+    remove_dead_group();
     for (coord i = A9; i <= A1; i = down(i)) {
         for (
             coord coordinate = i, right_edge = i + 32;
             coordinate <= right_edge;
-            coordinate += 4
+            coordinate = right(coordinate)
         ) {
             if (board[coordinate] == ' ') {
                 paint_territory(coordinate);

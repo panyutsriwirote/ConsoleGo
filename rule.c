@@ -37,7 +37,7 @@ static bool group_is_surrounded(coord coordinate) {
         return false;
     }
     char color = board[coordinate];
-    board[coordinate] = (color == 'X') ? 'B' : 'W';
+    board[coordinate] = (color == 'X') ? 'Y' : 'P';
     if (board[up_slot] == color) {
         if (!group_is_surrounded(up_slot)) {
             return false;
@@ -69,10 +69,10 @@ static void unmark_board() {
             coordinate = right(coordinate)
         ) {
             switch (board[coordinate]) {
-                case 'B':
+                case 'Y':
                     board[coordinate] = 'X';
                     break;
-                case 'W':
+                case 'P':
                     board[coordinate] = 'O';
                     break;
             }

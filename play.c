@@ -144,9 +144,9 @@ static char territory_owner(coord coordinate) {
     transverse_territory(coordinate);
     char owner;
     if (surrounded_by_X && !surrounded_by_O) {
-        owner = 'B';
+        owner = 'Y';
     } else if (surrounded_by_O && !surrounded_by_X) {
-        owner = 'W';
+        owner = 'P';
     } else {
         owner = ' ';
     }
@@ -176,13 +176,13 @@ static void count_territory() {
         for (
             coord coordinate = i, right_edge = i + 32;
             coordinate <= right_edge;
-            coordinate += 4
+            coordinate = right(coordinate)
         ) {
             switch (board[coordinate]) {
-                case 'B':
+                case 'Y':
                     X_territory++;
                     break;
-                case 'W':
+                case 'P':
                     O_territory++;
                     break;
             }
@@ -263,6 +263,7 @@ void calculate_score() {
             }
         }
     }
+    show_board();
     count_territory();
     int X_score = X_territory + X_prisoner;
     float O_score = O_territory + O_prisoner + KOMI;

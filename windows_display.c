@@ -2,20 +2,19 @@
 #include <stdio.h>
 #include <windows.h>
 
-#define red 4
-#define blue 9
-#define default_color 7
+typedef enum {
+    red = 4,
+    blue = 9,
+    red_backgroud = 64,
+    blue_backgroud = 144,
+    default_color = 7
+} col;
 
 static HANDLE console;
 
-static inline void print_X() {
-    SetConsoleTextAttribute(console, red);
-    putchar('X');
-    SetConsoleTextAttribute(console, default_color);
-}
-static inline void print_O() {
-    SetConsoleTextAttribute(console, blue);
-    putchar('O');
+static inline void display(col color, char c) {
+    SetConsoleTextAttribute(console, color);
+    putchar(c);
     SetConsoleTextAttribute(console, default_color);
 }
 
@@ -24,10 +23,16 @@ void show_board() {
     for (int i = 0; i < sizeof(board); i++) {
         switch (board[i]) {
             case 'X':
-                print_X();
+                display(red, 'X');
                 break;
             case 'O':
-                print_O();
+                display(blue, 'O');
+                break;
+            case 'Y':
+                display(red_backgroud, ' ');
+                break;
+            case 'P':
+                display(blue_backgroud, ' ');
                 break;
             default:
                 putchar(board[i]);
@@ -35,9 +40,9 @@ void show_board() {
     }
     putchar('\n');
     fputs("             ", stdout);
-    print_X();
+    display(red, 'X');
     printf("'s prisoner: %d\n", X_prisoner);
     fputs("             ", stdout);
-    print_O();
+    display(blue, 'O');
     printf("'s prisoner: %d\n", O_prisoner);
 }

@@ -6,11 +6,12 @@ typedef enum {
     red = 4,
     blue = 9,
     red_backgroud = 64,
-    blue_backgroud = 144,
-    default_color = 7
+    blue_backgroud = 144
 } col;
 
 static HANDLE console;
+static CONSOLE_SCREEN_BUFFER_INFO info;
+static WORD default_color;
 
 static inline void display(col color, char c) {
     SetConsoleTextAttribute(console, color);
@@ -20,6 +21,8 @@ static inline void display(col color, char c) {
 
 void show_board() {
     console = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(console, &info);
+    default_color = info.wAttributes;
     for (int i = 0; i < sizeof(board); i++) {
         switch (board[i]) {
             case 'X':

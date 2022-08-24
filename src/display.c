@@ -26,7 +26,7 @@ void show_board() {
     console = GetStdHandle(STD_OUTPUT_HANDLE);
     GetConsoleScreenBufferInfo(console, &info);
     default_color = info.wAttributes;
-    for (int i = 0; i < sizeof(board); i++) {
+    for (unsigned int i = 0; i < sizeof(board); i++) {
         switch (board[i]) {
             case 'X':
                 display(red, 'X');

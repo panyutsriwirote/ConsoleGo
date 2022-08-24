@@ -28,7 +28,7 @@ char board[798] =
   +---+---+---+---+---+---+---+---+---+\
 ";
 
-const int edge = sizeof(board) - 1;
+const unsigned int edge = sizeof(board) - 1;
 
 /*********************************************/
 /*          Edge checking functions          */

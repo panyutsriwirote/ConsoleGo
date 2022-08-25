@@ -1,10 +1,17 @@
 #include "board.h"
+#include "play.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 /*********************************************/
 /*                A 9x9 Board                */
 /*********************************************/
 
-char board[798] =
+static board init_board =
+{
+    .prev = NULL, .prev_move = {.type = PLACE_STONE},
+    .board =
 "\
     A   B   C   D   E   F   G   H   I\n\
   +---+---+---+---+---+---+---+---+---+\n\
@@ -26,9 +33,31 @@ char board[798] =
   +---+---+---+---+---+---+---+---+---+\n\
 1 |   |   |   |   |   |   |   |   |   |\n\
   +---+---+---+---+---+---+---+---+---+\
-";
+"
+};
 
-const unsigned int edge = sizeof(board) - 1;
+board* cur_board = &init_board;
+void next_board(mov prev_move) {
+    board* new_board = (board*) malloc(sizeof(board));
+    new_board->prev = cur_board;
+    strcpy(new_board->board, cur_board->board);
+    new_board->prev_move = prev_move;
+    cur_board = new_board;
+}
+
+void undo(bool undo_by_player) {
+    board* prev_board = cur_board->prev;
+    if (prev_board == NULL) {
+        puts("Cannot go back any further!");
+        return;
+    }
+    free(cur_board);
+    cur_board = prev_board;
+    if (undo_by_player) {
+        switch_player;
+        show_cur_board();
+    }
+}
 
 /*********************************************/
 /*          Edge checking functions          */

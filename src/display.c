@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-typedef enum {
+typedef enum _col {
     red = 4,
     blue = 9,
     red_backgroud = 64,
@@ -22,12 +22,12 @@ static inline void display(col color, char c) {
     SetConsoleTextAttribute(console, default_color);
 }
 
-void show_board() {
+void show_cur_board() {
     console = GetStdHandle(STD_OUTPUT_HANDLE);
     GetConsoleScreenBufferInfo(console, &info);
     default_color = info.wAttributes;
-    for (unsigned int i = 0; i < sizeof(board); i++) {
-        switch (board[i]) {
+    for (char* c = cur_board->board; *c != '\0'; c++) {
+        switch (*c) {
             case 'X':
                 display(red, 'X');
                 break;
@@ -41,7 +41,7 @@ void show_board() {
                 display(blue_backgroud, ' ');
                 break;
             default:
-                putchar(board[i]);
+                putchar(*c);
         }
     }
     putchar('\n');
@@ -55,15 +55,15 @@ void show_board() {
 
 #else
 
-void show_board() {
-    for (int i = 0; i < sizeof(board); i++) {
-        switch (board[i]) {
+void show_cur_board() {
+    for (char* c = cur_board->board; *c != '\0'; c++) {
+        switch (*c) {
             case 'Y':
             case 'P':
                 putchar(' ');
                 break;
             default:
-                putchar(board[i]);
+                putchar(*c);
         }
     }
     putchar('\n');

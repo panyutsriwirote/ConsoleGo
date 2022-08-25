@@ -2,48 +2,55 @@
 #include "rule.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char player = 'X';
-
-void switch_player() {
-    player = (player == 'X') ? 'O' : 'X';
-}
 
 #define clear_stdin while (getchar() != '\n') continue
 
 mov get_move() {
     static char buffer[4] = {'\0', '\0', '\0', '\0'};
-    static char *status;
     mov move;
     while (true) {
         printf("%c's move: ", player);
-        status = fgets(buffer, 4, stdin);
+        char* status = fgets(buffer, 4, stdin);
         if (status == NULL) {
             fputs("An error occured, exiting...", stderr);
             exit(EXIT_FAILURE);
         }
         if (buffer[0] == '\n') {
-            puts("Please enter a valid move: [A-I][1-9] or P to pass");
+            puts("Please enter a valid move: [A-I][1-9], P to pass, or U to undo");
             continue;
         }
         if (buffer[1] == '\n') {
+            switch (toupper(buffer[0])) {
+                case 'P':
+                    move.type = PASS;
+                    return move;
+                case 'U':
+                    move.type = UNDO;
+                    return move;
+                default:
+                    puts("Please enter a valid move: [A-I][1-9], P to pass, or U to undo");
+                    continue;
+            }
             if (toupper(buffer[0]) == 'P') {
                 move.type = PASS;
                 return move;
             } else {
-                puts("Please enter a valid move: [A-I][1-9] or P to pass");
+                puts("Please enter a valid move: [A-I][1-9], P to pass, or U to undo");
                 continue;
             }
         }
         if (buffer[2] != '\n') {
-            puts("Please enter a valid move: [A-I][1-9] or P to pass");
+            puts("Please enter a valid move: [A-I][1-9], P to pass, or U to undo");
             clear_stdin;
             continue;
         }
         char letter = toupper(buffer[0]);
         char num = buffer[1];
         if (letter < 'A' || letter > 'I' || num < '1' || num > '9') {
-            puts("Please enter a valid move: [A-I][1-9] or P to pass");
+            puts("Please enter a valid move: [A-I][1-9], P to pass, or U to undo");
             continue;
         }
         move.type = PLACE_STONE;
@@ -52,66 +59,52 @@ mov get_move() {
     }
 }
 
+static void calculate_score();
 void play(mov move) {
-    static bool X_pass = false;
-    static bool O_pass = false;
-    if (move.type == PASS) {
-        if (player == 'X') {
-            X_pass = true;
-        } else {
-            O_pass = true;
-        }
-        if (X_pass && O_pass) {
-            calculate_score();
-        }
-        switch_player();
+    if (move.type == UNDO)
+        {undo(true); return;}
+    else if (move.type == PASS) {
+        if (last_move.type == PASS) {calculate_score();}
+        next_board(move);
+        switch_player;
         return;
     }
-    if (player == 'X') {
-        X_pass = false;
-    } else {
-        O_pass = false;
-    }
     coord coordinate = move.coordinate;
-    char color = board[coordinate];
+    char color = slot(coordinate);
     if (color != ' ') {
         puts("Slot already taken, please make another move");
         return;
     }
+    next_board(move);
     /*******************************************************/
     /*                       Go Logic                      */
     /*******************************************************/
-    board[coordinate] = player;
+    slot(coordinate) = player;
     char enemy = (player == 'X') ? 'O' : 'X';
     explore_environment(coordinate)
-    if (board[up_slot] == enemy) {
-        if (is_captured(up_slot)) {
-            remove_group(up_slot);
-        }
+    if (slot(up_slot) == enemy) {
+        if (is_captured(up_slot)) {remove_group(up_slot);}
     }
-    if (board[down_slot] == enemy) {
-        if (is_captured(down_slot)) {
-            remove_group(down_slot);
-        }
+    if (slot(down_slot) == enemy) {
+        if (is_captured(down_slot)) {remove_group(down_slot);}
     }
-    if (board[left_slot] == enemy) {
-        if (is_captured(left_slot)) {
-            remove_group(left_slot);
-        }
+    if (slot(left_slot) == enemy) {
+        if (is_captured(left_slot)) {remove_group(left_slot);}
     }
-    if (board[right_slot] == enemy) {
-        if (is_captured(right_slot)) {
-            remove_group(right_slot);
-        }
+    if (slot(right_slot) == enemy) {
+        if (is_captured(right_slot)) {remove_group(right_slot);}
     }
+    // Suicide
     if (is_captured(coordinate)) {
-        remove_group(coordinate);
+        puts("Illegal move, please make another move");
+        undo(false);
+        return;
     }
     /*******************************************************/
     /*                       Go Logic                      */
     /*******************************************************/
-    show_board();
-    switch_player();
+    show_cur_board();
+    switch_player;
 }
 
 static bool surrounded_by_X = false;
@@ -119,7 +112,7 @@ static bool surrounded_by_O = false;
 
 static void transverse_territory(coord coordinate);
 static inline void check_surrounding(coord coordinate) {
-    switch (board[coordinate]) {
+    switch (slot(coordinate)) {
         case 'X':
             surrounded_by_X = true;
             break;
@@ -133,7 +126,7 @@ static inline void check_surrounding(coord coordinate) {
 }
 
 static void transverse_territory(coord coordinate) {
-    board[coordinate] = 'V';
+    slot(coordinate) = 'V';
     explore_environment(coordinate)
     check_surrounding(up_slot);
     check_surrounding(down_slot);
@@ -144,28 +137,22 @@ static void transverse_territory(coord coordinate) {
 static char territory_owner(coord coordinate) {
     transverse_territory(coordinate);
     char owner;
-    if (surrounded_by_X && !surrounded_by_O) {
-        owner = 'Y';
-    } else if (surrounded_by_O && !surrounded_by_X) {
-        owner = 'P';
-    } else {
-        owner = ' ';
-    }
+    if (surrounded_by_X && !surrounded_by_O)
+        {owner = 'Y';}
+    else if (surrounded_by_O && !surrounded_by_X)
+        {owner = 'P';}
+    else
+        {owner = ' ';}
     surrounded_by_X = surrounded_by_O = false;
     return owner;
 }
 
 static void paint_territory(coord coordinate) {
     char paint = territory_owner(coordinate);
-    for (coord i = A9; i <= A1; i = down(i)) {
-        for (
-            coord coordinate = i, right_edge = i + 32;
-            coordinate <= right_edge;
-            coordinate = right(coordinate)
-        ) {
-            if (board[coordinate] == 'V') {
-                board[coordinate] = paint;
-            }
+    for (every_row) {
+        for (every_column) {
+            if (slot(coordinate) == 'V')
+                {slot(coordinate) = paint;}
         }
     }
 }
@@ -173,13 +160,9 @@ static void paint_territory(coord coordinate) {
 static int X_territory = 0;
 static int O_territory = 0;
 static void count_territory() {
-    for (coord i = A9; i <= A1; i = down(i)) {
-        for (
-            coord coordinate = i, right_edge = i + 32;
-            coordinate <= right_edge;
-            coordinate = right(coordinate)
-        ) {
-            switch (board[coordinate]) {
+    for (every_row) {
+        for (every_column) {
+            switch (slot(coordinate)) {
                 case 'Y':
                     X_territory++;
                     break;
@@ -237,40 +220,34 @@ static void remove_dead_group() {
         mov input = get_dead_stone();
         if (input.type == PASS) {return;}
         coord coordinate = input.coordinate;
-        if (board[coordinate] == ' ') {
+        if (slot(coordinate) == ' ') {
             puts("There is no stone at the specified location");
             continue;
         }
         remove_group(coordinate);
-        show_board();
+        show_cur_board();
     }
 }
 
-void calculate_score() {
+static void calculate_score() {
     puts("Game Over!");
     puts("Select dead groups to remove, enter P when finished");
     remove_dead_group();
-    for (coord i = A9; i <= A1; i = down(i)) {
-        for (
-            coord coordinate = i, right_edge = i + 32;
-            coordinate <= right_edge;
-            coordinate = right(coordinate)
-        ) {
-            if (board[coordinate] == ' ') {
-                paint_territory(coordinate);
-            }
+    for (every_row) {
+        for (every_column) {
+            if (slot(coordinate) == ' ')
+                {paint_territory(coordinate);}
         }
     }
-    show_board();
+    show_cur_board();
     count_territory();
     int X_score = X_territory + X_prisoner;
     float O_score = O_territory + O_prisoner + KOMI;
     printf("X's score: %d\n", X_score);
     printf("O's score: %.1f\n", O_score);
-    if (X_score > O_score) {
-        printf("X wins by %.1f point\n", X_score - O_score);
-    } else {
-        printf("O wins by %.1f point\n", O_score - X_score);
-    }
+    if (X_score > O_score)
+        {printf("X wins by %.1f point\n", X_score - O_score);}
+    else
+        {printf("O wins by %.1f point\n", O_score - X_score);}
     exit(EXIT_SUCCESS);
 }

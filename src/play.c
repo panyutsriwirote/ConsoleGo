@@ -9,11 +9,13 @@ void switch_player() {
     player = (player == 'X') ? 'O' : 'X';
 }
 
+#define clear_stdin while (getchar() != '\n') continue
+
 mov get_move() {
     static char buffer[4] = {'\0', '\0', '\0', '\0'};
     static char *status;
     mov move;
-    input:
+    while (true) {
         printf("%c's move: ", player);
         status = fgets(buffer, 4, stdin);
         if (status == NULL) {
@@ -22,7 +24,7 @@ mov get_move() {
         }
         if (buffer[0] == '\n') {
             puts("Please enter a valid move: [A-I][1-9] or P to pass");
-            goto input;
+            continue;
         }
         if (buffer[1] == '\n') {
             if (toupper(buffer[0]) == 'P') {
@@ -30,25 +32,24 @@ mov get_move() {
                 return move;
             } else {
                 puts("Please enter a valid move: [A-I][1-9] or P to pass");
-                goto input;
+                continue;
             }
         }
         if (buffer[2] != '\n') {
             puts("Please enter a valid move: [A-I][1-9] or P to pass");
-            while (getchar() != '\n') {
-                continue;
-            }
-            goto input;
+            clear_stdin;
+            continue;
         }
         char letter = toupper(buffer[0]);
         char num = buffer[1];
         if (letter < 'A' || letter > 'I' || num < '1' || num > '9') {
             puts("Please enter a valid move: [A-I][1-9] or P to pass");
-            goto input;
+            continue;
         }
-    move.type = PLACE_STONE;
-    move.coordinate = to_coord(buffer);
-    return move;
+        move.type = PLACE_STONE;
+        move.coordinate = to_coord(buffer);
+        return move;
+    }
 }
 
 void play(mov move) {
@@ -194,7 +195,7 @@ static mov get_dead_stone() {
     static char buffer[4] = {'\0', '\0', '\0', '\0'};
     static char *status;
     mov move;
-    input:
+    while (true) {
         fputs("Select dead group: ", stdout);
         status = fgets(buffer, 4, stdin);
         if (status == NULL) {
@@ -203,7 +204,7 @@ static mov get_dead_stone() {
         }
         if (buffer[0] == '\n') {
             puts("Please enter a valid location: [A-I][1-9] or P to finish");
-            goto input;
+            continue;
         }
         if (buffer[1] == '\n') {
             if (toupper(buffer[0]) == 'P') {
@@ -211,41 +212,38 @@ static mov get_dead_stone() {
                 return move;
             } else {
                 puts("Please enter a valid location: [A-I][1-9] or P to finish");
-                goto input;
+                continue;
             }
         }
         if (buffer[2] != '\n') {
             puts("Please enter a valid location: [A-I][1-9] or P to finish");
-            while (getchar() != '\n') {
-                continue;
-            }
-            goto input;
+            clear_stdin;
+            continue;
         }
         char letter = toupper(buffer[0]);
         char num = buffer[1];
         if (letter < 'A' || letter > 'I' || num < '1' || num > '9') {
             puts("Please enter a valid location: [A-I][1-9] or P to finish");
-            goto input;
+            continue;
         }
-    move.type = PLACE_STONE;
-    move.coordinate = to_coord(buffer);
-    return move;
+        move.type = PLACE_STONE;
+        move.coordinate = to_coord(buffer);
+        return move;
+    }
 }
 
 static void remove_dead_group() {
-    start:
-    mov input = get_dead_stone();
-    if (input.type == PASS) {
-        return;
+    while (true) {
+        mov input = get_dead_stone();
+        if (input.type == PASS) {return;}
+        coord coordinate = input.coordinate;
+        if (board[coordinate] == ' ') {
+            puts("There is no stone at the specified location");
+            continue;
+        }
+        remove_group(coordinate);
+        show_board();
     }
-    coord coordinate = input.coordinate;
-    if (board[coordinate] == ' ') {
-        puts("There is no stone at the specified location");
-        goto start;
-    }
-    remove_group(coordinate);
-    show_board();
-    goto start;
 }
 
 void calculate_score() {

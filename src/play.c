@@ -270,9 +270,9 @@ void calculate_score() {
     printf("X's score: %d\n", X_score);
     printf("O's score: %.1f\n", O_score);
     if (X_score > O_score) {
-        printf("X wins by %.1f point", X_score - O_score);
+        printf("X wins by %.1f point\n", X_score - O_score);
     } else {
-        printf("O wins by %.1f point", O_score - X_score);
+        printf("O wins by %.1f point\n", O_score - X_score);
     }
     exit(EXIT_SUCCESS);
 }

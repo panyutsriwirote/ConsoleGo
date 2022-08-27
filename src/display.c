@@ -16,7 +16,7 @@ static HANDLE console;
 static CONSOLE_SCREEN_BUFFER_INFO info;
 static WORD default_color;
 
-static inline void display(col color, char c) {
+static void display(col color, char c) {
     SetConsoleTextAttribute(console, color);
     putchar(c);
     SetConsoleTextAttribute(console, default_color);

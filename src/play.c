@@ -110,7 +110,7 @@ static bool surrounded_by_X = false;
 static bool surrounded_by_O = false;
 
 static void transverse_territory(coord coordinate);
-static inline void check_surrounding(coord coordinate) {
+static void check_surrounding(coord coordinate) {
     switch (slot(coordinate)) {
         case 'X':
             surrounded_by_X = true;

@@ -14,7 +14,7 @@ mov get_move() {
         printf("%c's move: ", player);
         char* status = fgets(buffer, 4, stdin);
         if (status == NULL) {
-            fputs("An error occured, exiting...", stderr);
+            fputs("An error occured, exiting...\n", stderr);
             exit(EXIT_FAILURE);
         }
         if (buffer[0] == '\n') {
@@ -181,7 +181,7 @@ static mov get_dead_stone() {
         fputs("Select dead group: ", stdout);
         status = fgets(buffer, 4, stdin);
         if (status == NULL) {
-            fputs("An error occured, exiting...", stderr);
+            fputs("An error occured, exiting...\n", stderr);
             exit(EXIT_FAILURE);
         }
         if (buffer[0] == '\n') {

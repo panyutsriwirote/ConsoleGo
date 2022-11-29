@@ -11,4 +11,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include_directories(./include)
-add_executable(go ./src/main.c ./src/board.c ./src/display.c ./src/rule.c ./src/play.c)
+add_executable (
+	go
+		./src/main.c
+		./src/board.c
+		./src/display.c
+		./src/rule.c
+		./src/play.c
+)

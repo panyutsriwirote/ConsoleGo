@@ -53,4 +53,4 @@ Invalid moves that cannot be played include:
 
 Once two **P**'s have been played consecutively, the game will end and both player must choose groups that will be removed from the board. Enter **P** when the removal has finished.
 
-Score will be calculated using territory scoring with 6.5 Komi. This can be modified in **src/rule.h**.
+Score will be calculated using territory scoring with 6.5 Komi. Komi can be modified in **include/rule.h**.
